@@ -2,7 +2,8 @@
 """This is the base class for everything in this module"""
 import uuid
 from datetime import datetime
-
+import models
+# Import the storage variable
 
 class BaseModel:
     """This is the grandfather for all of the upcoming classes"""
@@ -24,7 +25,7 @@ class BaseModel:
             # save new created at
             self.created_at = datetime.now()
             self.updated_at = datetime.now()
-            # store it by a saving mechanisim JSON
+            models.storage.new(self)
 
     def __str__(self):
         """Printing the objects str method"""
@@ -38,6 +39,7 @@ class BaseModel:
 
         self.updated_at = datetime.now()
         # saving mechanism using JSON
+        models.storage.save()
 
     def to_dict(self):
 
