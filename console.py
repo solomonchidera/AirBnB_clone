@@ -7,42 +7,29 @@
 
 import cmd
 import json
-import uuid
-from datetime import datetime
-from models.base_model import BaseModel
-
+import models
+from models import storage
 
 class HBNBCommand(cmd.Cmd):
     """Main class of the console"""
     prompt = '(hbnb) '
-
-    def do_quit(self, arg):
-        """Quit command to exit the program"""
-        return True
-
-    def do_EOF(self, arg):
-        """Exiting the program on EOF"""
-        return True
-
-    def emptyline(self):
-        """Do nothing on empty input line"""
-        pass
-
+    
     def do_create(self, arg):
-        """Create a new instance of BaseModel and save to JSON file"""
+        """Creates a new instance of Basemodel, save it, print the id."""
         if not arg:
             print("** class name missing **")
             return
-
         try:
             new_object = eval(arg)
             new_object.save("file.json")
+            new_object = eval(arg)()
+            new_object.save()
             print(new_object.id)
         except NameError:
-            print("** class doesn't exist **")
+            print("** class dosen't exist **")
 
     def do_show(self, arg):
-        """Print the string representation of an instance"""
+        """Prints the string representation of an instance based on class name and id."""
         if not arg:
             print("** class name missing **")
             return
@@ -63,18 +50,18 @@ class HBNBCommand(cmd.Cmd):
 
         # if show id isn't found
         except IndexError:
+        if len(arg) < 2:
             print("** instance id missing **")
-        # if show object doesn't work
-        except NameError:
-            print("** class doesn't exist **")
+            return
+        key = args[0] + '.' + args[1]
+        if key in storage.all():
+            print("** no instance found **")
 
     def do_destroy(self, arg):
-        """Delete an instance based on class name and id"""
+        """Deletes an instance based on class name and id."""
         if not arg:
             print("** class name missing **")
             return
-
-        # split parsed arguments by the console to test conditions
         args = arg.split()
         try:
             class_name = args[0]
@@ -90,9 +77,18 @@ class HBNBCommand(cmd.Cmd):
                 print("** no instance found **")
 
         except IndexError:
+        if args[0] not in storage.__objects():
+            print("** class dosen't exist **")
+            return
+        if len(args) < 2:
             print("** instance id missing **")
-        except NameError:
-            print("** class doesn't exist **")
+            return
+        key = args[0] + '.' + args[1]
+        if key in storage.all():
+            del storage.all()[key]
+            storage.save()
+        else:
+            print("** no instance found **")
 
     def do_all(self, arg):
         """Print string representation of all instances"""
@@ -113,13 +109,17 @@ class HBNBCommand(cmd.Cmd):
 
         except NameError:
             print("** class doesn't exist **")
+        """Prints all string representation of instances based on class name or all."""
+        if not arg:
+            print([str(obj) for obj in storage.all().values()])
+        elif arg not in storage:
+            print("** class dosen't exist **")
 
     def do_update(self, arg):
-        """Update an instance based on class name, id, attribute, and value"""
+        """Updates an instance based on class name and id by adding or updating attribute."""
         if not arg:
             print("** class name missing **")
             return
-
         args = arg.split()
         try:
             class_name = args[0]
@@ -149,10 +149,33 @@ class HBNBCommand(cmd.Cmd):
                 print("** no instance found **")
 
         except IndexError:
+        if args[0] not in storage:
+            print("** class dosen't exist **")
+            return
+        if len(args) < 2:
             print("** instance id missing **")
-        except NameError:
-            print("** class doesn't exist **")
+            return
+        key = args[0] + '.' + args[1]
+        if key not in storage.all():
+            print("** no instance found **")
+            return
+        if len(args) < 3:
+            print("** attribute name missing **")
+            return
+        if len(args) < 4:
+            print("** value missing **")
+            return
+        obj = storage.all()[key]
+        setattr(obj, args[2], args[3].strip('"'))
+        obj.save()    
 
+    def do_quit(self, arg):
+        """Quit command to exit the program"""
+        return True
+
+    def do_EOF(self, arg):
+        """Exiting the program on EOF"""
+        return True
 
 if __name__ == '__main__':
     HBNBCommand().cmdloop()
