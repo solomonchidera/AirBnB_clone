@@ -36,7 +36,7 @@ class HBNBCommand(cmd.Cmd):
 
         try:
             new_object = eval(arg)
-            new_object.save(self)
+            new_object.save("file.json")
             print(new_object.id)
         except NameError:
             print("** class doesn't exist **")
@@ -54,7 +54,7 @@ class HBNBCommand(cmd.Cmd):
             instance_id = args[1]
 
             # Load all instances and check if the instance exists
-            all_instances = BaseModel.load_instances()
+            all_instances = storage.reload()
             key = "{}.{}".format(class_name, instance_id)
             if key in all_instances:
                 print(all_instances[key])
@@ -81,7 +81,7 @@ class HBNBCommand(cmd.Cmd):
             instance_id = args[1]
 
             # Load all instances and check if the instance exists
-            all_instances = BaseModel.load_instances()
+            all_instances = storage.reload()
             key = "{}.{}".format(class_name, instance_id)
             if key in all_instances:
                 del all_instances[key]
@@ -100,7 +100,7 @@ class HBNBCommand(cmd.Cmd):
             if arg:
                 class_name = arg
                 # Filter instances by class name
-                all_instances = BaseModel.load_instances()
+                all_instances = storage.reload()
                 filtered_instances = {k: v for k, v in all_instances.items() if k.startswith(class_name)}
                 if filtered_instances:
                     print([str(instance) for instance in filtered_instances.values()])
@@ -108,7 +108,7 @@ class HBNBCommand(cmd.Cmd):
                     print("** class doesn't exist **")
             else:
                 # Print all instances
-                all_instances = BaseModel.load_instances()
+                all_instances = storage.reload()
                 print([str(instance) for instance in all_instances.values()])
 
         except NameError:
@@ -126,7 +126,7 @@ class HBNBCommand(cmd.Cmd):
             instance_id = args[1]
 
             # Load all instances and check if the instance exists
-            all_instances = BaseModel.load_instances()
+            all_instances = storage.reload()
             key = "{}.{}".format(class_name, instance_id)
             if key in all_instances:
                 # Get the instance to be updated
