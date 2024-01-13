@@ -19,7 +19,7 @@ class FileStorage():
 
     def new(self, obj):
         """ sets in __objects the obj with key <obj class name>.id"""
-        key = obj.__class__.__name__+ "." + str(obj.id)
+        key = obj.__class__.__name__ + "." + str(obj.id)
         self.__objects[key] = obj
 
     def save(self):
@@ -29,20 +29,17 @@ class FileStorage():
         for key in self.__objects:
             json_new_obj[key] = self.__objects[key].to_dict()
 
-        with open (self.__file_path, 'w') as f:
+        with open(self.__file_path, 'w')as f:
             json.dump(json_new_obj, f)
 
     def reload(self):
         """ deserializes the JSON file to __objects (only if the JSON file
         (__file_path) exists ; otherwise, do nothing. If the file doesn’t
         exist, no exception should be raised)"""
-        try :
-            with open (self.__file_path, 'r', encoding="UTF8") as f:
+        try:
+            with open(self.__file_path, 'r', encoding="UTF8") as f:
                 for key, value in json.load(f).items():
                     att_value = eval(value["__class__"])(**value)
                     self.__objects[key] = att_value
         except FileNotFoundError:
             pass
-
-storage = FileStorage()
-storage.reload()
