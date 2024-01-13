@@ -9,9 +9,11 @@ import cmd
 import json
 import uuid
 import datetime
+import models
 
 
 class BaseModel:
+    """This is the base class for everythin"""
     def __init__(self):
         self.id = str(uuid.uuid4())
         self.created_at = datetime.datetime.now()
@@ -34,6 +36,7 @@ class BaseModel:
 
 
 class Storage:
+    """This is the file that will store all new objects"""
     def save(self):
         """ Save instances to a JSON file (dummy implementation) """
         with open("data.json", "w") as file:
@@ -47,6 +50,7 @@ storage = Storage()
 
 
 class HBNBCommand(cmd.Cmd):
+    """This is the main promp that will show instead of cmd"""
     prompt = "(hbnb) "
 
     def do_quit(self, arg):
