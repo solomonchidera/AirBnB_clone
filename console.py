@@ -23,7 +23,7 @@ class BaseModel:
 
     def __str__(self):
         """ String representation of the instance """
-        return f"[{self.__class__.__name__}] ({self.id}) {{'created_at': {self.created_at}, 'id': '{self.id}', 'updated_at': {self.updated_at}}}"
+        return f"[{self.__class__.__name__}] ({self.id}) {{'created_at': datetime.datetime({self.created_at}), 'id': '{self.id}', 'updated_at': datetime.datetime({self.updated_at})}}"
 
 class Storage:
     def save(self):
