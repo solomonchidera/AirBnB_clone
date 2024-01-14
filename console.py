@@ -1,20 +1,21 @@
 #!/usr/bin/python3
 """
-   A generic class to build line-oriented command interpreters.
-   Interpreters constructed with this class obey the following conventions:
-   cmd module where the console will be built with
+Module Console
 """
 
 import cmd
-import json
-import uuid
-import datetime
+import shlex
+import sys
 import models
+import uuid
+import json
+import datetime
 
 
 class BaseModel:
-    """This is the base class for everythin"""
+    """This is the base model that will identity everything"""
     def __init__(self):
+        """This is the init method for every instance created"""
         self.id = str(uuid.uuid4())
         self.created_at = datetime.datetime.now()
         self.updated_at = datetime.datetime.now()
@@ -36,7 +37,7 @@ class BaseModel:
 
 
 class Storage:
-    """This is the file that will store all new objects"""
+    """This is tthe main sotrage file that will store everything"""
     def save(self):
         """ Save instances to a JSON file (dummy implementation) """
         with open("data.json", "w") as file:
@@ -50,111 +51,140 @@ storage = Storage()
 
 
 class HBNBCommand(cmd.Cmd):
-    """This is the main promp that will show instead of cmd"""
-    prompt = "(hbnb) "
+    """HBNB Class """
+    prompt = '(hbnb) '
 
-    def do_quit(self, arg):
-        """Quit command to exit the program"""
+    classes = {'BaseModel': BaseModel}
+
+    def do_quit(self, argument):
+        """ Defines quit option"""
         return True
 
-    def do_EOF(self, arg):
-        """Exit the program with EOF (Ctrl + D)"""
-        print("")
+    def do_EOF(self, argument):
+        """ Defines EOF option"""
+        print()
         return True
 
     def emptyline(self):
-        """Do nothing on empty line"""
+        """ Defines Empty option"""
         pass
 
-    def do_create(self, arg):
-        """Creates a new instance of BaseModel, saves it, and prints the id"""
-        args = arg.split()
-        if not args:
-            print("** class name missing **")
-        elif args[0] not in classes:
-            print("** class doesn't exist **")
+    def do_create(self, argument):
+        """Creates an instance of BaseModel"""
+        if argument:
+            if argument in self.classes:
+                # instance = models.base_model.BaseModel()
+                get_class = getattr(sys.modules[__name__], argument)
+                instance = get_class()
+                print(instance.id)
+                models.storage.save()
+            else:
+                print("** class doesn't exist **")
         else:
-            new_instance = classes[args[0]]()
-            new_instance.save()
-            print(new_instance.id)
+            print("** class name missing **")
+        return
 
-    def do_show(self, arg):
-        """Prints the string representation of an instance"""
-        args = arg.split()
-        if not args:
+    def do_show(self, argument):
+        """string representation based on the class name and id"""
+        token = shlex.split(argument)
+        if len(token) == 0:
             print("** class name missing **")
-        elif args[0] not in classes:
-            print("** class doesn't exist **")
-        elif len(args) < 2:
+        elif len(token) == 1:
             print("** instance id missing **")
+        elif token[0] not in self.classes:
+            print("** class doesn't exist **")
         else:
-            instance_id = args[1]
-            key = args[0] + "." + instance_id
-            if key in objects:
-                print(objects[key])
+            dic = models.storage.all()
+            # Key has format <className>.id
+            keyU = token[0] + '.' + str(token[1])
+            if keyU in dic:
+                print(dic[keyU])
             else:
                 print("** no instance found **")
+        return
 
-    def do_destroy(self, arg):
+    def do_destroy(self, argument):
         """Deletes an instance based on the class name and id"""
-        args = arg.split()
-        if not args:
+        tokens = shlex.split(argument)
+        if len(tokens) == 0:
             print("** class name missing **")
-        elif args[0] not in classes:
-            print("** class doesn't exist **")
-        elif len(args) < 2:
+            return
+        elif len(tokens) == 1:
             print("** instance id missing **")
+            return
+        elif tokens[0] not in self.classes:
+            print("** class doesn't exist **")
+            return
         else:
-            instance_id = args[1]
-            key = args[0] + "." + instance_id
-            if key in objects:
-                del objects[key]
-                storage.save()
+            dic = models.storage.all()
+            # Key has format <className>.id
+            key = tokens[0] + '.' + tokens[1]
+            if key in dic:
+                del dic[key]
+                models.storage.save()
             else:
                 print("** no instance found **")
 
-    def do_all(self, arg):
-        """Prints all string representation of instances"""
-        args = arg.split()
-        instances = []
-        if args and args[0] not in classes:
-            print("** class doesn't exist **")
-        else:
-            if args and args[0] in classes:
-                class_name = args[0]
-                for key, value in objects.items():
-                    if key.startswith(class_name):
-                        instances.append(str(value))
-            else:
-                for value in objects.values():
-                    instances.append(str(value))
-            print(instances)
+    def do_all(self, argument):
+        """all string representation of all instances"""
+        token_set = shlex.split(argument)
+        lists = []
+        dic = models.storage.all()
+        # show all if no class is passed
+        if len(token_set) == 0:
+            for key in dic:
+                rep_Class = str(dic[key])
+                lists.append(rep_Class)
+            print(lists)
+            return
 
-    def do_update(self, arg):
-        """Updates an instance based on the class name and id"""
-        args = arg.split()
-        if not args:
-            print("** class name missing **")
-        elif args[0] not in classes:
+        if token_set[0] not in self.classes:
             print("** class doesn't exist **")
-        elif len(args) < 2:
-            print("** instance id missing **")
+            return
         else:
-            instance_id = args[1]
-            key = args[0] + "." + instance_id
-            if key in objects:
-                if len(args) < 4:
-                    print("** attribute name missing **")
-                elif len(args) < 5:
-                    print("** value missing **")
-                else:
-                    attribute_name = args[2]
-                    attribute_value = args[3]
-                    setattr(objects[key], attribute_name, attribute_value)
-                    objects[key].save()
-            else:
-                print("** no instance found **")
+            # Representation for a specific class
+            rep_Class = ""
+            for key in dic:
+                className = key.split('.')
+                if className[0] == token_set[0]:
+                    rep_Class = str(dic[key])
+                    lists.append(rep_Class)
+            print(lists)
+
+    def do_update(self, argument):
+        """Updates an instance based on the class name and id """
+        token1 = shlex.split(argument)
+        if len(token1) == 0:
+            print("** class name missing **")
+            return
+        elif len(token1) == 1:
+            print("** instance id missing **")
+            return
+        elif len(token1) == 2:
+            print("** attribute name missing **")
+            return
+        elif len(token1) == 3:
+            print("** value missing **")
+            return
+        elif token1[0] not in self.classes:
+            print("** class doesn't exist **")
+            return
+        keyI = token1[0] + "." + token1[1]
+        dicI = models.storage.all()
+        try:
+            instanceU = dicI[keyI]
+        except KeyError:
+            print("** no instance found **")
+            return
+        try:
+            typeA = type(getattr(instanceU, token1[2]))
+            token1[3] = typeA(token1[3])
+        except AttributeError:
+            pass
+        setattr(instanceU, token1[2], token1[3])
+        models.storage.save()
 
 
 if __name__ == '__main__':
+    """infinite loop"""
     HBNBCommand().cmdloop()
