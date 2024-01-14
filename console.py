@@ -13,7 +13,8 @@ import datetime
 
 
 class BaseModel:
-    """This is the base model that will identity everything"""
+    """This is the base model that will identify everything"""
+
     def __init__(self):
         """This is the init method for every instance created"""
         self.id = str(uuid.uuid4())
@@ -46,7 +47,6 @@ class Storage:
 
 
 objects = {}
-classes = {"BaseModel": BaseModel}
 storage = Storage()
 
 
@@ -73,7 +73,6 @@ class HBNBCommand(cmd.Cmd):
         """Creates an instance of BaseModel"""
         if argument:
             if argument in self.classes:
-                # instance = models.base_model.BaseModel()
                 get_class = getattr(sys.modules[__name__], argument)
                 instance = get_class()
                 print(instance.id)
