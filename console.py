@@ -7,6 +7,7 @@ import cmd
 import shlex
 import sys
 import models
+from models.user import User
 import uuid
 import json
 import datetime
@@ -54,7 +55,7 @@ class HBNBCommand(cmd.Cmd):
     """HBNB Class """
     prompt = '(hbnb) '
 
-    classes = {'BaseModel': BaseModel}
+    classes = {'BaseModel': BaseModel, 'User': User}
 
     def do_quit(self, argument):
         """ Defines quit option"""
