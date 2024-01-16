@@ -60,9 +60,9 @@ class HBNBCommand(cmd.Cmd):
     """HBNB Class """
     prompt = '(hbnb) '
 
-    classes = {'BaseModel': BaseModel, 'User': User,
-                    'State': State, 'Amenity': Amenity, 'City': City,
-                    'Place': Place, 'Review': Review}
+    classes = {'BaseModel': BaseModel, 'User': User, 'State': State,
+               'Amenity': Amenity, 'City': City,
+               'Place': Place, 'Review': Review}
 
     def do_quit(self, argument):
         """Defines quit option"""
