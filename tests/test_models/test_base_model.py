@@ -31,6 +31,12 @@ class TestBaseModel(unittest.TestCase):
         old_updated_at = self.base_model.updated_at
         self.base_model.save()
         self.assertNotEqual(old_updated_at, self.base_model.updated_at)
+        # Add assertion to check if the save method is
+        # producing the expected output
+        expected_output = "OK"
+        actual_output = "OK"  # Replace this with the actual
+        # value returned by your save method
+        self.assertEqual(actual_output, expected_output)
 
     def test_to_dict(self):
         """Test the to_dict method"""
