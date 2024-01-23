@@ -1,18 +1,18 @@
 header {
-    background-color: white;
-    height: 70px;
-    width: 100%;
-    border-bottom: 1px #CCCCCC;
-    display: flex;
-    align-items: center;
-
+	background-color: white;
+	height: 70px;
+	width: 100%;
+	border-bottom: 1px solid #CCCCCC; /* set bottom border */
+	display: flex;
+	align-items: center; /* center items vertically */
 }
 
-header .logo {
-    background-image: url("../images/logo.png");
-    background-repeat: no-repeat;
-    /*Logo size*/
-    width: 142px;
-    height: 60px;
-    margin-left: 20px;
+.logo {
+	background-image: url("../images/logo.png");
+	background-repeat: no-repeat;
+	/* logo size */
+	width: 142px;
+	height: 60px;
+	/* set a left margin */
+	margin-left: 20px;
 }
