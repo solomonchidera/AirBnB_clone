@@ -158,6 +158,14 @@ class HBNBCommand(cmd.Cmd):
                     lists.append(rep_Class)
             print(lists)
 
+    def do_count(self, args):
+        """retrieving the number of instances of a class"""
+        counter = 0
+        for m, n in storage._FileStorage__objects.items():
+            if args == m.spilt('.')[0]:
+                counter += 1
+        print(counter)
+
     def do_update(self, argument):
         """Updates an instance based on the class name and id """
         token1 = shlex.split(argument)
