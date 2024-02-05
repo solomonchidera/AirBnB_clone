@@ -199,6 +199,26 @@ class HBNBCommand(cmd.Cmd):
         setattr(instanceU, token1[2], token1[3])
         models.storage.save()
 
+    def do_destroy(self, args):
+        """Destory a specfic object by its ID"""
+        new_obj = args.partition("")
+        obName = new_obj[0]
+        ob_id = new_obj[2]
+        if ob_id and '' in ob_id:
+            ob_id = ob_id.partition('')[0]
+
+        if not obName:
+            print("**class doesn't exist**")
+            return
+
+        key = obName + "." + ob_id
+
+        try:
+            del(storage.all()[key])
+            storage.save()
+        except keyError:
+            print("** no instance found**")
+
 
 if __name__ == '__main__':
     """infinite loop"""
